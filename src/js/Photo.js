@@ -54,8 +54,6 @@ function Photo(index, id, title, link, thumb_url, images) {
 		var self = this;
 		
 		return new Promise(function(yay, nay) {
-			console.log('load', self.index);
-
 			var thumbLoaded = loadImage(self.thumb_url, tmpContainer);
 			var imagesLoaded = Promise.all(images.map(function(image) {
 				return loadImage(image, tmpContainer);
@@ -67,13 +65,37 @@ function Photo(index, id, title, link, thumb_url, images) {
 		});
 	};
 
+	this.setEnabled = function(enabled) {
+		var img = this.elImage;
+		// TODO actually finish implementing
+		// maybe capture the clicks on the container instead of per image
+		if(enabled) {
+			//img.addEventListener('click', CLYK.onImageClick, false);
+			img.style.cursor = 'pointer';
+		} else {
+			//img.removeEventListener('click', CLYK.onImageClick, false);
+			img.style.cursor = 'default';
+		}
+	};
+
+	this.guessMarginsAndSizes = function() {
+		var el_w = this.elContainer.clientWidth;
+		var el_h = this.elContainer.clientHeight;
+		var img_w = this.elImage.clientWidth;
+		var img_h = this.elImage.clientHeight;
+
+		this.client_width = el_w;
+		this.client_height = el_h;
+		this.margin_w = el_w - img_w;
+		this.margin_h = el_h - img_h;
+	};
+
 	function loadImage(url, tmpContainer) {
-		console.log('loadImage', url);
 		return new Promise(function(yay, nay) {
 			var img = document.createElement('img');
 			
 			img.addEventListener('load', function() {
-				//TODO uncomment tmpContainer.removeChild(img);
+				tmpContainer.removeChild(img);
 				yay(img);
 			});
 

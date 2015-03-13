@@ -66,10 +66,10 @@ function init(element) {
 	qs.position = 'absolute';
 	qs.top = '0px';
 	qs.left = '0px';
-	/*qs.overflow = 'hidden';
+	qs.overflow = 'hidden';
 	qs.width = '300px';
 	qs.height = '300px';
-	qs.visibility = 'hidden';*/ // TODO uncomment
+	qs.visibility = 'hidden';
 	queueContainer = qc;
 
 	// Event handlers
@@ -176,9 +176,66 @@ function jsonPicasa(data) {
 
 function onPhotosLoaded() {
 	console.log('photos loaded');
-	photos.forEach(function(photo) {
-		container.appendChild(photo.elContainer);
-	});
+	photos.forEach(addPhoto);
+}
+
+function addPhoto(photo, index) {
+	var photoContainer = photo.elContainer;
+	var ps = photoContainer.style;
+	//ps.opacity = 0.0;
+	ps.position = 'absolute';
+	
+	ps.zIndex = index;
+	container.appendChild(photo.elContainer);
+
+	photo.guessMarginsAndSizes();
+	photo.setEnabled(false);
+
+	var i = index;
+	var pos = getGridPhotoPos(i);
+	console.log(i, pos);
+/*	ps.top = window.innerHeight + 'px';
+	ps.left = pos.x + 'px';
+	photo.grid_left = pos.x;
+	photo.grid_top = pos.y;
+	photo.top = window.innerHeight;
+	photo.left = pos.x;
+	photo.opacity = 0;
+	/*photo.rotation = 100 * this._getRandRotation();
+	photo.animate({
+		delay: i * 0.03,
+		top: photo.grid_top,
+		opacity: 1,
+		rotation: this._getRandRotation()
+	}, 1);*/
+
+}
+
+function getGridPhotoPos(index) {
+	if(index == 0) {
+		return { x: 0, y: 0 };
+	}
+
+	var c_width = container.parentNode.clientWidth;
+	var photo = photos[index];
+	var prev_photo = photos[index - 1];
+
+	var pw = prev_photo.client_width;
+	var ph = prev_photo.client_height;
+	var margin = 10;
+
+	var left = prev_photo.grid_left + pw + margin;
+	var top = prev_photo.grid_top;
+
+	if(left + photo.client_width >= c_width) {
+		left = 0;
+		top += ph + margin;
+	}
+	
+	return {
+		x: left,
+		y: top
+	};
 }
 
 function updateBackground() {
